@@ -48,11 +48,22 @@ wp.pl.			2018 IN	NS ns1.wp.pl.
 ```
 
 ### A (IPv4 address)
+The **A record** identifies an IPv4 address for a given domain name.
 
 ```bash
 # dig A +multiline pogoda.wp.pl
 pogoda.wp.pl.		3600 IN	A 212.77.100.133
 ```
+
+### CNAME 
+The **CNAME record** maps one domain name (considered as an alias) to another domain name (considered as canonical name).
+
+```bash
+# dig m.wp.pl
+m.wp.pl.		600	IN	CNAME	rd.wp.pl.
+rd.wp.pl.		1460	IN	A	212.77.100.83
+```
+
 
 ## DNS Servers (nameservers)
 We differentiate two types of DNS servers:
@@ -60,9 +71,12 @@ We differentiate two types of DNS servers:
 2. **Non-authoritative Servers** (aka Caching Servers) answer queries using either its local cache or by quering other servers (listed in the local `/etc/resolv.conf`). The responses from other servers are cached for a given (TTL) time.
 
 Examples of available nameservers:
-- BIND
+- BIND (worldwide standard for Linux)
+- CoreDNS (used on Kubernetes)
+- F5 BIG-IP DNS
+- Microsoft DNS
 - dnsmasq
-- djbdns (open-sourced in 2001
+- djbdns
 
 ### BIND
 On Linux, the most common DNS software is **BIND** (`bind` package, `named` program). The configuration is stored in `/etc/named.conf`.
