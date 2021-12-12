@@ -26,7 +26,7 @@ wp.pl.	3592 IN	SOA ns1.wp.pl. dnsmaster.wp-sa.pl. (
 		3600       ; minimum (1 hour)
 		)
 ```
-- The `ns1.wp.pl.` entry defines the zone's name server (NS)
+- The `ns1.wp.pl.` entry defines the zone's primary name server
 - The `dnsmaster.wp-sa.pl.` entry means that `dnsmaster@wp-sa.pl` is the e-mail address to the zone admin.
 - The **refresh** entry defines how often the secondary server queries the primary server for update
 - The **serial** entry must be incremented every time a change is made to the zone file on the primary server. The next time the secondary server queries the primary, it detects that a change was made to the zone file. In this way the secondary knows when to transfer that zone.
@@ -64,12 +64,13 @@ On Linux, the most common DNS software is **BIND** (`bind` package, `named` prog
 #### Zone File
 Zone file is a configuration that describes a DNS zone. 
 
-You declare a zone and reference the zone file in `/etc/named.conf`:
+In `/etc/named.conf` you declare a zone and then reference the relevant zone file:
 ```bash
 # part of /etc/named.conf
 zone "mylabserver.com" {
    type master;
    file "/var/named/fwd.mylabserver.com.db";
+   # additional settings
 };
 ```
 
@@ -79,7 +80,7 @@ You define the zone in the zone file, starting always with `TTL` and `SOA` recor
 ```bash
 # start of /var/named/fwd.mylabserver.com.db
 $TTL    86400
-@       IN      SOA     nameserver.mylabserver.com. root.mylabserver.com. (
+@       IN      SOA     ns1.mylabserver.com. root.mylabserver.com. (
                           10030         ; Serial
                            3600         ; Refresh
                            1800         ; Retry
@@ -89,7 +90,19 @@ $TTL    86400
 # ... other entries
 ```
 
+:bulb: Plain-text zone files can be compiled to their binary representations using the `named-compilezone` program. This makes service queries faster.
 
+
+#### High availability
+All name servers are set using `NS` records in the zone file.
+```bash
+# part of a zone file
+@       IN      NS     ns1.mylabserver.com.
+@       IN      NS     ns2.mylabserver.com.
+```
+There can be only one primary nameserver (`type master`). On the other hand, there can be many secondaries (`type slave`). 
+
+:zap: If the primary nameserver fails, you can reconfigure one of the secondary nameservers to become the new primary. You would also need to reconfigure all secondaries to respect the new primary. All the configuration is done in the `/etc/named.conf` files.
 
 #### RNDC
 It is possible to control BIND DNS server remotely over TCP/IP using RNDC (Remote Name Daemon Control). The `rndc` is a **name server control utility**. 
