@@ -6,7 +6,13 @@ DNS acts as a directory of network resources (mainly hosts) and maps hostnames t
 Worldwide there are 13 root zone (`.`) clusters of servers: https://www.iana.org/domains/root/servers
 
 ## Clients
-On Linux, the nameservers for quering are defined in `/etc/resolv.conf`. When you run `nslookup`, the utility will query the server(s) defined in the `/etc/resolv.conf`.
+On Linux, the `bind-utils` package ships three programs: `nslookup`,`dig` and `host`. 
+
+The `dig +trace  pogoda.wp.pl` can be used to show the entire DNS resolution process, starting from querying the `.` root zone nameservers, going through the `.com` TLD nameservers, to receiving the list of nameservers for the `wp.pl` zone. In the last step, the zone-specific nameserver will finally return the `A` record for `pogoda.wp.pl`.
+
+You can ask for specific DNS records like this: `dig NS wp.pl` or `nslookup -type=NS wp.pl` or `host -t ns wp.pl`
+
+The default nameservers to query for DNS names are defined in `/etc/resolv.conf`. When you run `nslookup`, the utility will query the server(s) defined in the `/etc/resolv.conf`.
 
 We categorize DNS queries into two types:
 - **Forward DNS Lookup** returns an IP address for a given name.
