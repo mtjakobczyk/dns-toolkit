@@ -124,6 +124,10 @@ There can be only one primary nameserver (`type master`). On the other hand, the
 
 :zap: If the primary nameserver fails, you can reconfigure one of the secondary nameservers to become the new primary. You would also need to reconfigure all secondaries to respect the new primary. All the configuration is done in the `/etc/named.conf` files.
 
+#### Security
+- To secure the BIND `named` systemd service, we could run this service in an **`chroot` jail**, effectively changing the program's root directory.
+- **DNSSEC** is a security extension for the DNS service to sign the DNS records in the zone file. On the nameserver, there is a private key that signs the DNS records. The nameserver publishes the corresponding public key, which is signed by the parent's zone private key (`pl.` signs the public key from `wp.pl.`). As a result, the resolver can verify that the zone's public key is authentic (confirmed by the parent zone signature) and the DNS records are authentic (confirmed by the zone's signature). [More here](icann.org/resources/pages/dnssec-what-is-it-why-important-2019-03-05-en).
+
 #### RNDC
 It is possible to control BIND DNS server remotely over TCP/IP using RNDC (Remote Name Daemon Control). The `rndc` is a **name server control utility**. 
 
