@@ -12,7 +12,7 @@ The `dig +trace  pogoda.wp.pl` can be used to show the entire DNS resolution pro
 
 You can ask for specific DNS records like this: `dig NS wp.pl` or `nslookup -type=NS wp.pl` or `host -t ns wp.pl`
 
-The default nameservers to query for DNS names are defined in `/etc/resolv.conf`. When you run `nslookup`, the utility will query the server(s) defined in the `/etc/resolv.conf`.
+On Linux, the default nameservers to query for DNS names are defined in `/etc/resolv.conf`.
 
 We categorize DNS queries into two types:
 - **Forward DNS Lookup** returns an IP address for a given name.
