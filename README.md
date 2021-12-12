@@ -5,17 +5,48 @@ DNS acts as a directory of network resources (mainly hosts) and maps hostnames t
 
 Worldwide there are 13 root zone (`.`) clusters of servers: https://www.iana.org/domains/root/servers
 
+## Clients
+On Linux, the nameservers for quering are defined in `/etc/resolv.conf`. When you run `nslookup`, the utility will query the server(s) defined in the `/etc/resolv.conf`.
+
 We categorize DNS queries into two types:
 - **Forward DNS Lookup** returns an IP address for a given name.
 - **Reverse DNS Lookup** returns a name for a given IP address.
 
-A DNS Record 
-DNS Record types:
-- **NS (name server) record** identifies an authoritative DNS server for a zone
-- **SOA (start of authority) record** stores information about DNS zone(s)
+## DNS Record types
 
-## Clients
-On Linux, the nameservers for quering are defined in `/etc/resolv.conf`. When you run `nslookup`, the utility will query the server(s) defined in the `/etc/resolv.conf`.
+### SOA (start of authority)
+ The **SOA record** defines authoritative information about a zone:
+```bash
+# dig SOA +multiline wp.pl
+wp.pl.	3592 IN	SOA ns1.wp.pl. dnsmaster.wp-sa.pl. (
+		2021120802 ; serial
+		900        ; refresh (15 minutes)
+		600        ; retry (10 minutes)
+		86400      ; expire (1 day)
+		3600       ; minimum (1 hour)
+		)
+```
+- The `ns1.wp.pl.` entry defines the zone's name server (NS)
+- The `dnsmaster.wp-sa.pl.` entry means that `dnsmaster@wp-sa.pl` is the e-mail address to the zone admin.
+- The **refresh** entry defines how often the secondary server queries the primary server for update
+- The **serial** entry must be incremented every time a change is made to the zone file on the primary server. The next time the secondary server queries the primary, it detects that a change was made to the zone file. In this way the secondary knows when to transfer that zone.
+
+### NS (name server)
+The **NS record** identifies an authoritative DNS server for a zone.
+
+```bash
+# dig NS +multiline wp.pl
+wp.pl.			2018 IN	NS ns2.wp.pl.
+wp.pl.			2018 IN	NS ns1.task.gda.pl.
+wp.pl.			2018 IN	NS ns1.wp.pl.
+```
+
+### A (IPv4 address)
+
+```bash
+# dig A +multiline pogoda.wp.pl
+pogoda.wp.pl.		3600 IN	A 212.77.100.133
+```
 
 ## DNS Servers (nameservers)
 We differentiate two types of DNS servers:
@@ -31,7 +62,32 @@ Examples of available nameservers:
 On Linux, the most common DNS software is **BIND** (`bind` package, `named` program). The configuration is stored in `/etc/named.conf`.
 
 #### Zone File
-Zone file is a configuration that describes a DNS zone.
+Zone file is a configuration that describes a DNS zone. 
+
+You declare a zone and reference the zone file in `/etc/named.conf`:
+```bash
+# part of /etc/named.conf
+zone "mylabserver.com" {
+   type master;
+   file "/var/named/fwd.mylabserver.com.db";
+};
+```
+
+The zone files are stored in `/var/named`.
+
+You define the zone in the zone file, starting always with `TTL` and `SOA` record:
+```bash
+# start of /var/named/fwd.mylabserver.com.db
+$TTL    86400
+@       IN      SOA     nameserver.mylabserver.com. root.mylabserver.com. (
+                          10030         ; Serial
+                           3600         ; Refresh
+                           1800         ; Retry
+                         604800         ; Expiry
+                          86400         ; Minimum TTL
+)
+# ... other entries
+```
 
 
 
