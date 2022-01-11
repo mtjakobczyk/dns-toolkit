@@ -20,6 +20,8 @@ We categorize DNS queries into two types:
 
 ## DNS Record types
 
+An **apex record** (naked domain name) is a DNS record at the root (or apex) of a DNS zone. In the DNS zone `wp.pl`, an apex record also has the fully qualified name `wp.pl`.
+
 ### SOA (start of authority)
  The **SOA record** defines authoritative information about a zone:
 ```bash
@@ -63,7 +65,7 @@ The **CNAME record** maps one domain name (considered as an alias) to another do
 m.wp.pl.		600	IN	CNAME	rd.wp.pl.
 rd.wp.pl.		1460	IN	A	212.77.100.83
 ```
-
+CNAME record cannot be used for the zone apex record.
 
 ## DNS Servers (nameservers)
 We differentiate two types of DNS servers:
