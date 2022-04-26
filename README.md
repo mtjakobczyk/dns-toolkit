@@ -67,6 +67,11 @@ rd.wp.pl.		1460	IN	A	212.77.100.83
 ```
 CNAME record cannot be used for the zone apex record.
 
+### TXT
+See: https://www.cloudflare.com/en-gb/learning/dns/dns-records/dns-txt-record/
+
+To read a TXT record using `dig` execute `dig -t txt +short sometxt.example.com`
+
 ## DNS Servers (nameservers)
 We differentiate two types of DNS servers:
 1. **Authoritative Server** is able to answer queries using its own database without asking other servers.
